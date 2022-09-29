@@ -36,13 +36,12 @@ def convert_dataframe_to_chart(df: pd.DataFrame) -> str:
 @functions_framework.http
 def get_ticker_graph(request):
 
-  request_json = request.get_json(silent=True)
-  if request_json is None:
-    return make_response("Bad request JSON", 400)
-
-  df = pd.DataFrame(request_json, columns=['Datetime', 'Open', 'High', 'Low', 'Close', 'Volume'])
-  df['Datetime']= pd.to_datetime(df['Datetime'])
-  chart_name = convert_dataframe_to_chart(df)
-  chart_url = upload_blob_and_return_url(chart_name)
-
-  return chart_url
+    request_json = request.get_json(silent=True)
+    if request_json is None:
+        return make_response("Bad request JSON", 400)
+    
+    df = pd.DataFrame(request_json, columns=['Datetime', 'Open', 'High', 'Low', 'Close', 'Volume'])
+    df['Datetime']= pd.to_datetime(df['Datetime'])
+    chart_name = convert_dataframe_to_chart(df)
+    chart_url = upload_blob_and_return_url(chart_name)
+    return chart_url
