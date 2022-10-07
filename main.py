@@ -41,7 +41,7 @@ def get_crypto_ticker_graph(request):
         return make_response("Bad request JSON", 400)
     
     df = pd.DataFrame(request_json, columns=['timestamp', 'Open', 'High', 'Low', 'Close', 'Volume'])
-    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
+    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
     chart_name = convert_dataframe_to_chart(df)
     chart_url = upload_blob_and_return_url(chart_name)
     return chart_url
