@@ -22,7 +22,7 @@ def create_chart_name() -> str:
     return "chart_{}.png".format(str(uuid.uuid4()));
 
 def convert_dataframe_to_chart(df: pd.DataFrame) -> str:
-    fig = go.Figure(data=[go.Candlestick(x=df['Datetime'],
+    fig = go.Figure(data=[go.Candlestick(x=df['timestamp'],
                 open=df['Open'], high=df['High'],
                 low=df['Low'], close=df['Close'])
                      ])
@@ -30,18 +30,34 @@ def convert_dataframe_to_chart(df: pd.DataFrame) -> str:
     fig.update_layout(xaxis_rangeslider_visible=False)
 
     chart_name = create_chart_name()
-    fig.write_image(tempfile.gettempdir() +"/"+chart_name, format='png', width=300, height=200)
+    fig.write_image(tempfile.gettempdir() +"/"+chart_name, format='png', width=1200, height=800)
     return chart_name
 
 @functions_framework.http
-def get_ticker_graph(request):
+def get_crypto_ticker_graph(request):
 
     request_json = request.get_json(silent=True)
     if request_json is None:
         return make_response("Bad request JSON", 400)
     
-    df = pd.DataFrame(request_json, columns=['Datetime', 'Open', 'High', 'Low', 'Close', 'Volume'])
-    df['Datetime']= pd.to_datetime(df['Datetime'])
+    df = pd.DataFrame(request_json, columns=['timestamp', 'Open', 'High', 'Low', 'Close', 'Volume'])
+    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
+    chart_name = convert_dataframe_to_chart(df)
+    chart_url = upload_blob_and_return_url(chart_name)
+    return chart_url
+
+@functions_framework.http
+def get_stock_ticker_graph(request):
+
+    request_json = request.get_json(silent=True)
+    if request_json is None:
+        return make_response("Bad request JSON", 400)
+    
+    transformed_array = []
+    for x in range(len(request_json['c'])):
+        transformed_array.append([request_json['t'][x], request_json['o'][x], request_json['h'][x], request_json['l'][x], request_json['c'][x],request_json['v'][x]])
+    df = pd.DataFrame(transformed_array, columns=['timestamp', 'Open', 'High', 'Low', 'Close', 'Volume'])
+    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
     chart_name = convert_dataframe_to_chart(df)
     chart_url = upload_blob_and_return_url(chart_name)
     return chart_url
