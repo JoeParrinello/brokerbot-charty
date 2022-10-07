@@ -69,4 +69,4 @@ urllib3==1.26.12
 watchdog==2.1.9
 Werkzeug==2.2.2
 wrapt==1.14.1
-https://download.pytorch.org/whl/cpu/torch-1.12.1%2Bcpu-cp39-cp39-linux_x86_64.whl
+https://download.pytorch.org/whl/cpu/torch-1.12.1%2Bcpu-cp310-cp310-linux_x86_64.whl
